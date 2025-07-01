@@ -4,10 +4,10 @@ from rich import print
 
 
 def get_list(
-    keywords="Liquidation",
-    page_no=1,
-    page_size=20,
-    sale_method=None):
+        keywords="Liquidation",
+        page_no=1,
+        page_size=20,
+        sale_method=None):
     url = "https://www.commercialrealestate.com.au/bf/api/gqlb"
 
     variables = {
@@ -97,15 +97,25 @@ def get_list(
     }
 
     response = requests.get(url, headers=headers,
-                            params=params,timeout=10)
+                            params=params, timeout=10)
     response.raise_for_status()
     data = response.json()['data']['searchListings']['pagedSearchResults']
     return data
 
 
+def get_simplified_list(*args, **kwargs):
+    data = get_list(*args, **kwargs)
+    print(data)
+    simplified = []
+    for item in data:
+        simplified.append({
+            "adid": item.get("adID"),
+            "seoUrl": item.get("seoUrl"),
+            "shortDescription": item.get("shortDescription"),
+            "displayableStreet": item.get("displayableStreet"),
+            "suburb": item.get("suburb"),
+            "state": item.get("state"),
+            "postcode": item.get("postcode"),
+        })
+    return simplified
 
-data = get_list()
-for d in data:
-    print(d)
-    break
-print(len(data))
