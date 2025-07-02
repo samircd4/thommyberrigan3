@@ -32,7 +32,6 @@ This is a Streamlit web application for searching commercial real estate listing
    Ensure the following files are present in the project directory:
 
    - `keywords.txt` (list of keywords, one per line)
-   - `ads_details.xlsx` (Excel file with listing details)
 
 4. **Run the app**:
 
@@ -50,5 +49,10 @@ This is a Streamlit web application for searching commercial real estate listing
 - You can modify `keywords.txt` to update the list of available keywords.
 
 ---
+
+## Author
+
+**Samir**  
+Email: [samircd4@gmail.com](mailto:samircd4@gmail.com)
 
 Feel free to customize this README as needed for your project!
