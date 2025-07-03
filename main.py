@@ -114,7 +114,7 @@ def get_simplified_list(*args, **kwargs):
     for item in data:
         simplified.append({
             "adid": item.get("adID"),
-            "seoUrl": item.get("seoUrl"),
+            "seoUrl": f'https://www.commercialrealestate.com.au{item.get("seoUrl")}',
             "shortDescription": item.get("shortDescription"),
             "displayableStreet": item.get("displayableStreet"),
             "suburb": item.get("suburb"),
