@@ -7,7 +7,7 @@ import pandas as pd
 def get_list(
         keywords=["Liquidation"],
         page_no=1,
-        page_size=20,
+        page_size=200,
         sale_method=None):
     url = "https://www.commercialrealestate.com.au/bf/api/gqlb"
     data = []
@@ -101,9 +101,13 @@ def get_list(
         response = requests.get(url, headers=headers,
                                 params=params, timeout=10)
         response.raise_for_status()
-        fetched_data = response.json()['data']['searchListings']['pagedSearchResults']
+        fetched_data = []
+        for item in response.json()['data']['searchListings']['pagedSearchResults']:
+            item['keyword'] = keyword
+            fetched_data.append(item)
+            print(item)
         data.extend(fetched_data)
-    
+
     return data
 
 
@@ -114,6 +118,7 @@ def get_simplified_list(*args, **kwargs):
     for item in data:
         simplified.append({
             "adid": item.get("adID"),
+            "keyword": item.get("keyword"),
             "seoUrl": f'https://www.commercialrealestate.com.au{item.get("seoUrl")}',
             "shortDescription": item.get("shortDescription"),
             "displayableStreet": item.get("displayableStreet"),
@@ -122,9 +127,19 @@ def get_simplified_list(*args, **kwargs):
             "postcode": item.get("postcode"),
         })
     
-    
     df = pd.DataFrame(simplified)
-    df.to_csv("data.csv", index=False)
-    return simplified
+    # Remove duplicates by displayableStreet
+    df = df.drop_duplicates(subset=["displayableStreet"])
+    df.to_excel("data.xlsx", index=False)
+    
+    return df
 
 
+# with open("keywords.txt", "r") as f:
+#     keyword_options = f.readlines()
+
+# simplified = get_simplified_list(keyword_options)
+# df = pd.DataFrame(simplified)
+# # Remove duplicates by displayableStreet
+# df = df.drop_duplicates(subset=["displayableStreet"])
+# df.to_excel("data.xlsx", index=False)
