@@ -134,12 +134,60 @@ def get_simplified_list(*args, **kwargs):
     
     return df
 
+def get_secondary_list(keywords=["Liquidation"]):
+    headers = {
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9,bn;q=0.8',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/json',
+        'Origin': 'https://www.realcommercial.com.au',
+        'Referer': 'https://www.realcommercial.com.au/',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-site',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+    }
+    results = []
+    page = 1
+    for keyword in keywords:
+        while True:
+            json_data = {
+                'channel': 'buy',
+                'filters': {
+                    'keywords': keyword,
+                    'within-radius': 'includesurrounding',
+                    'surrounding-suburbs': True,
+                },
+                'page': page,
+                'page-size': 100,
+            }
 
-# with open("keywords.txt", "r") as f:
-#     keyword_options = f.readlines()
+            response = requests.post(
+                'https://api.realcommercial.com.au/listing-ui/searches?featureFlags=showSoldDisclaimer,lsapiLocations',
+                headers=headers,
+                json=json_data,
+            )
+            data = response.json()['listings']
+            
+            if len(data) == 0:
+                break
+            page+=1
+            
+            for item in data:
+                results.append(
+                    {"adid": item.get("id"),
+                    "keyword": keyword,
+                    "seoUrl": f'https://www.realcommercial.com.au{item.get("pdpUrl")}',
+                    "shortDescription": item.get("title"),
+                    "displayableStreet": item.get("address", {}).get("streetAddress",''),
+                    "suburb": item.get("address", {}).get("suburb"),
+                    "state": item.get("address", {}).get("state"),
+                    "postcode": item.get("address", {}).get("postcode"),
+                })
+    
+    df = pd.DataFrame(results)
+    # Remove duplicates by displayableStreet
+    df = df.drop_duplicates(subset=["displayableStreet"])
+    df.to_excel("data.xlsx", index=False)
+    return df
 
-# simplified = get_simplified_list(keyword_options)
-# df = pd.DataFrame(simplified)
-# # Remove duplicates by displayableStreet
-# df = df.drop_duplicates(subset=["displayableStreet"])
-# df.to_excel("data.xlsx", index=False)
