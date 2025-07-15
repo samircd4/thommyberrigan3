@@ -1,59 +1,69 @@
-# To-Do List for Commercial Real Estate Search App
+# To-Do List for Commercial Real Estate Search App (Revised)
 
-## 1. Set Up the Project
+## 1. Project Setup
 
-- [] Create a new project directory (if not already done).
-- [ ] Set up a Python virtual environment (optional but recommended).
-- [x] Install required packages:  
-      `pip install streamlit pandas requests openpyxl`
+- [x] Project directory created and Python environment set up.
+- [x] Required packages installed: `streamlit`, `pandas`, `requests`, `openpyxl`.
 
-## 2. Prepare Data Files
+## 2. Data Preparation
 
-- [x] Create a `keywords.txt` file with some initial keywords (one per line).
+- [x] `keywords.txt` file exists and is used for keyword management.
 
-## 3. Develop main.py
+## 3. Backend Logic (`main.py`)
 
-- [ ] Implement a function (e.g., `get_simplified_list`) that:
-  - [ ] Accepts filters: keywords, page number, page size, sale method.
-  - [ ] Fetches or mocks commercial real estate listings from [commercialrealestate.com.au](https://www.commercialrealestate.com.au/).
-  - [ ] Returns a pandas DataFrame with columns:  
-        `adid`, `keyword`, `seoUrl`, `shortDescription`, `displayableStreet`, `suburb`, `state`, `postcode`.
+- [x] Implemented `get_list` to fetch listings from commercialrealestate.com.au.
+- [x] Implemented `get_simplified_list` to return a simplified DataFrame for commercialrealestate.com.au.
+- [x] Implemented `get_secondary_list` to fetch and simplify listings from realcommercial.com.au.
+- [x] Implemented `get_both_list` to combine results from both sources and remove duplicates.
+- [x] All DataFrames are saved to Excel files for reference.
 
-## 4. Develop app.py (Streamlit App)
+## 4. Streamlit App (`app.py`)
 
-- [ ] Set up the Streamlit page with a title.
-- [ ] Load keywords from `keywords.txt`.
-- [ ] Add a multiselect widget for keywords.
-- [ ] Add a text input to allow users to add new keywords (and update `keywords.txt`).
-- [ ] Add input fields for page number and page size.
-- [ ] Add input for sale method (comma-separated integers).
-- [ ] Add a button to fetch listings.
-- [ ] On button click:
-  - [ ] Call `get_simplified_list` with the selected filters.
-  - [ ] Show a loading spinner while fetching.
-  - [ ] Display the number of results found.
-  - [ ] Display the results in a table, with the `seoUrl` column as clickable links.
-  - [ ] Handle and display any errors.
+- [x] Streamlit page set up with a title and wide layout.
+- [x] Website selector for `commercialrealestate` and `realcommercial` (though only combined search is used).
+- [x] Loads keywords from `keywords.txt`.
+- [x] Multiselect widget for keywords.
+- [x] Text input for adding new keywords (appends to `keywords.txt` if not present).
+- [x] Number inputs for page number and page size.
+- [x] Text input for sale method (comma-separated integers).
+- [x] "Get Listings" button triggers search.
+- [x] On button click:
+  - [x] Calls `get_both_list` with selected filters.
+  - [x] Shows a loading spinner while fetching.
+  - [x] Displays the number of results found.
+  - [x] Displays results in a table with clickable `seoUrl` links.
+  - [x] Handles and displays errors.
 
 ## 5. Testing
 
-- [ ] Test the app with different keyword and filter combinations.
-- [ ] Test adding new keywords and ensure they persist.
-- [ ] Test error handling (e.g., with invalid input or no results).
+- [ ] Test the app with various keyword and filter combinations.
+- [ ] Test adding new keywords and ensure they persist in `keywords.txt`.
+- [ ] Test error handling (invalid input, no results, API errors).
 
 ## 6. Documentation
 
-- [ ] Write a `README.md` with:
-  - [ ] Project description.
+- [ ] Update `README.md` with:
+  - [ ] Project description and features.
   - [ ] Setup and run instructions.
-  - [ ] Any notes or requirements.
+  - [ ] Notes on data sources and requirements.
 
-## 7. (Optional) Bonus Features
+## 7. Bonus Features (Optional)
 
-- [ ] Allow users to remove keywords from the list.
+- [ ] Allow users to remove keywords from the list and update `keywords.txt`.
 - [ ] Add basic styling/customization to improve the app’s appearance.
+- [ ] Allow user to select which website(s) to search (currently always searches both).
 
 ---
 
 **Reference:**  
-Listings are sourced from [Commercial Real Estate Australia](https://www.commercialrealestate.com.au/).
+Listings are sourced from [Commercial Real Estate Australia](https://www.commercialrealestate.com.au/) and [Real Commercial](https://www.realcommercial.com.au/).
+
+---
+
+**Summary of Progress:**
+
+- Core backend and frontend logic is implemented and functional.
+- Keyword management (add) is implemented; removal is not.
+- Combined search is always used, regardless of website selector.
+- Testing and documentation are still needed.
+- Some UI/UX improvements and feature refinements are possible.

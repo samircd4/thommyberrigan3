@@ -1,6 +1,6 @@
 from pandas.core.generic import T
 import streamlit as st
-from main import get_simplified_list, get_secondary_list
+from main import get_both_list
 import pandas as pd
 
 st.set_page_config(layout="wide")
@@ -43,17 +43,23 @@ else:
 if st.button("Get Listings"):
     with st.spinner("Fetching data...", show_time=True):
         try:
-            if website=="commercialrealestate":
-                df = get_simplified_list(
-                    keywords=keywords,
-                    page_no=page_no,
-                    page_size=page_size,
-                    sale_method=sale_method_list
-                )
-            elif website=="realcommercial":
-                df = get_secondary_list(keywords=keywords)
-            else:
-                st.error("Please select a website")
+            df = get_both_list(
+                keywords=keywords,
+                page_no=page_no,
+                page_size=page_size,
+                sale_method=sale_method_list
+            )
+            # if website=="commercialrealestate":
+            #     df = get_simplified_list(
+            #         keywords=keywords,
+            #         page_no=page_no,
+            #         page_size=page_size,
+            #         sale_method=sale_method_list
+            #     )
+            # elif website=="realcommercial":
+            #     df = get_secondary_list(keywords=keywords)
+            # else:
+            #     st.error("Please select a website")
             
             st.success(f"Found {len(df)} results.")
             if df is not None:

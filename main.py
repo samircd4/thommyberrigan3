@@ -130,11 +130,11 @@ def get_simplified_list(*args, **kwargs):
     df = pd.DataFrame(simplified)
     # Remove duplicates by displayableStreet
     df = df.drop_duplicates(subset=["displayableStreet"])
-    df.to_excel("data.xlsx", index=False)
+    df.to_excel("commercialrealestate.xlsx", index=False)
     
     return df
 
-def get_secondary_list(keywords=["Liquidation"]):
+def get_secondary_list(keywords=["Liquidation"],*args, **kwargs):
     headers = {
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.9,bn;q=0.8',
@@ -167,6 +167,7 @@ def get_secondary_list(keywords=["Liquidation"]):
                 headers=headers,
                 json=json_data,
             )
+            print(response.status_code)
             data = response.json()['listings']
             
             if len(data) == 0:
@@ -174,6 +175,7 @@ def get_secondary_list(keywords=["Liquidation"]):
             page+=1
             
             for item in data:
+                print(item)
                 results.append(
                     {"adid": item.get("id"),
                     "keyword": keyword,
@@ -188,6 +190,14 @@ def get_secondary_list(keywords=["Liquidation"]):
     df = pd.DataFrame(results)
     # Remove duplicates by displayableStreet
     df = df.drop_duplicates(subset=["displayableStreet"])
-    df.to_excel("data.xlsx", index=False)
+    df.to_excel("realcommercial.xlsx", index=False)
     return df
 
+def get_both_list(*args, **kwargs):
+    df_1 = get_simplified_list(*args, **kwargs)
+    df_2 = get_secondary_list(*args, **kwargs)
+    
+    final_df = pd.concat([df_1, df_2])
+    final_df = final_df.drop_duplicates(subset=["displayableStreet"])
+    final_df.to_excel('final.xlsx', index=False)
+    return final_df
