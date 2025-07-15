@@ -130,7 +130,7 @@ def get_simplified_list(*args, **kwargs):
     df = pd.DataFrame(simplified)
     # Remove duplicates by displayableStreet
     df = df.drop_duplicates(subset=["displayableStreet"])
-    df.to_excel("commercialrealestate.xlsx", index=False)
+    df.to_csv("commercialrealestate.csv", index=False)
     
     return df
 
@@ -167,7 +167,7 @@ def get_secondary_list(keywords=["Liquidation"],*args, **kwargs):
                 headers=headers,
                 json=json_data,
             )
-            print(response.status_code)
+            
             data = response.json()['listings']
             
             if len(data) == 0:
@@ -176,11 +176,12 @@ def get_secondary_list(keywords=["Liquidation"],*args, **kwargs):
             
             for item in data:
                 print(item)
+                title = item.get("title") if item.get('title') is not None else item.get("address", {}).get("streetAddress",'')
                 results.append(
                     {"adid": item.get("id"),
                     "keyword": keyword,
                     "seoUrl": f'https://www.realcommercial.com.au{item.get("pdpUrl")}',
-                    "shortDescription": item.get("title"),
+                    "shortDescription": title,
                     "displayableStreet": item.get("address", {}).get("streetAddress",''),
                     "suburb": item.get("address", {}).get("suburb"),
                     "state": item.get("address", {}).get("state"),
@@ -190,7 +191,7 @@ def get_secondary_list(keywords=["Liquidation"],*args, **kwargs):
     df = pd.DataFrame(results)
     # Remove duplicates by displayableStreet
     df = df.drop_duplicates(subset=["displayableStreet"])
-    df.to_excel("realcommercial.xlsx", index=False)
+    df.to_csv("realcommercial.csv", index=False)
     return df
 
 def get_both_list(*args, **kwargs):
@@ -199,5 +200,5 @@ def get_both_list(*args, **kwargs):
     
     final_df = pd.concat([df_1, df_2])
     final_df = final_df.drop_duplicates(subset=["displayableStreet"])
-    final_df.to_excel('final.xlsx', index=False)
+    final_df.to_csv('final.csv', index=False)
     return final_df
