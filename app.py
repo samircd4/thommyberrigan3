@@ -1,7 +1,5 @@
-from pandas.core.generic import T
 import streamlit as st
 from main import get_both_list
-import pandas as pd
 
 st.set_page_config(layout="wide")
 st.title("Commercial Real Estate Search")
