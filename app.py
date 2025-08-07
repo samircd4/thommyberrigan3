@@ -1,11 +1,12 @@
 import streamlit as st
-from main import get_both_list
+from main import get_both_list, get_secondary_list, get_simplified_list
 
 st.set_page_config(layout="wide")
 st.title("Commercial Real Estate Search")
 
 
-website = st.selectbox("Select website", options=['commercialrealestate', 'realcommercial'])
+website = st.selectbox("Select website", options=[
+                    'commercialrealestate', 'realcommercial', 'Both'])
 
 with open("keywords.txt", "r") as f:
     keyword_options = [k.strip() for k in f.readlines() if k.strip()]
@@ -16,7 +17,7 @@ keywords = st.multiselect(
 new_keywords = st.text_input("Add new keywords (comma separated, optional)")
 if new_keywords.strip():
     new_keywords_list = [k.strip()
-                        for k in new_keywords.split(",") if k.strip()]
+                         for k in new_keywords.split(",") if k.strip()]
     # Add new keywords to file if not present
     updated = False
     with open("keywords.txt", "a+") as f:
@@ -41,31 +42,43 @@ else:
 if st.button("Get Listings"):
     with st.spinner("Fetching data...", show_time=True):
         try:
-            df = get_both_list(
-                keywords=keywords,
-                page_no=page_no,
-                page_size=page_size,
-                sale_method=sale_method_list
-            )
-            # if website=="commercialrealestate":
-            #     df = get_simplified_list(
-            #         keywords=keywords,
-            #         page_no=page_no,
-            #         page_size=page_size,
-            #         sale_method=sale_method_list
-            #     )
-            # elif website=="realcommercial":
-            #     df = get_secondary_list(keywords=keywords)
-            # else:
-            #     st.error("Please select a website")
-            
+            if website=="commercialrealestate":
+                df = get_simplified_list(
+                    keywords=keywords,
+                    page_no=page_no,
+                    page_size=page_size,
+                    sale_method=sale_method_list
+                )
+            elif website=="realcommercial":
+                df = get_secondary_list(keywords=keywords)
+            elif website == 'Both':
+                df = get_both_list(
+                    keywords=keywords,
+                    page_no=page_no,
+                    page_size=page_size,
+                    sale_method=sale_method_list
+                )
+            else:
+                st.error("Please select a website")
+
             st.success(f"Found {len(df)} results.")
             if df is not None:
                 # Make seoUrl column a clickable link
                 df['seoUrl'] = df['seoUrl'].apply(
                     lambda x: f'<a href="{x}" target="_blank">Go to Listing</a>')
+
+                # Adjust the ratio as needed
+                col1, col2, col3 = st.columns([10, 1, 1])
+
+                with col3:
+                    st.download_button(
+                        label="Download CSV",
+                        data=df.to_csv(index=False),
+                        file_name="listings.csv",
+                        mime="text/csv"
+                    )
                 st.write(df.to_html(escape=False, index=False),
                          unsafe_allow_html=True)
+
         except Exception as e:
             st.error(f"Error: {e}")
-
